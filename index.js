@@ -25,9 +25,29 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect();
+        // await client.connect();
+        const userCollection = client.db("flowersShop").collection("users");
+
+
+        /* user crate */
+        app.get("/users", async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result);
+        });
+        app.post("/users", async (req, res) => {
+            const user = req.body;
+            const query = { email: user.email };
+            const existingUser = await userCollection.findOne(query);
+            if (existingUser) {
+                return res.send({ message: "You is already access!" });
+            }
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
+
+
         await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        console.log("Slower Shop DataBase is successfully connected to MongoDB!");
     } finally {
         // await client.close();
     }
