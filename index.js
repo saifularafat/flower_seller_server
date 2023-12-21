@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const PORT = process.env.PORT || 5000;
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const PORT = process.env.PORT || 4000;
 
 /* middleware */
 const corsOptions = {
@@ -45,14 +45,24 @@ async function run() {
             res.send(result);
         });
         /* Flowers section  */
-        app.get("/allFlowers", async (req, res) => {
+        app.get("/flowersAll", async (req, res) => {
             const result = await flowersCollection.find().toArray();
             res.send(result);
         })
-        app.post("/allFlowers", async (req, res) => {
+        app.post("/flowersAll", async (req, res) => {
             const flower = req.body;
             const result = await flowersCollection.insertOne(flower);
             res.send(result)
+        })
+        app.patch("/flowersAll/:id", async (req, res) => {
+            const flower = req.params.id;
+            const filter = { _id: new ObjectId(flower) };
+            const updateDoc = {
+                $set: {
+                    /* TODO */
+                }
+            }
+
         })
 
         // await client.db("admin").command({ ping: 1 });
