@@ -28,6 +28,7 @@ async function run() {
         // await client.connect();
         const usersCollection = client.db("flowersShop").collection("users");
         const flowersCollection = client.db("flowersShop").collection("allFlowers");
+        const contentTextCollection = client.db("flowersShop").collection("contentText");
 
         /* user crate */
         app.get("/users", async (req, res) => {
@@ -80,7 +81,31 @@ async function run() {
             res.send(result)
         })
         /* Flowers post and get or update section  end*/
-
+        /* text content info start */
+        app.get("/contentText", async (req, res) => {
+            const result = await contentTextCollection.find().toArray();
+            res.send(result)
+        })
+        app.post("/contentText", async (req, res) => {
+            const text = req.body;
+            const result = await contentTextCollection.insertOne(text);
+            res.send(result);
+        })
+        app.patch("/contentText/:id", async (req, res) => {
+            const text = req.params.id;
+            const filter = { _id: new ObjectId(text) };
+            const options = { upsert: true };
+            const content = req.body;
+            const updateDoc = {
+                $set: {
+                    text: content.text,
+                    link: content.link
+                }
+            };
+            const result = await contentTextCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+        /* text content info end */
 
         // await client.db("admin").command({ ping: 1 });
         console.log("Slower Shop DataBase is successfully connected to MongoDB!");
