@@ -44,7 +44,7 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
-        /* Flowers section  */
+        /* Flowers post and get or update section  start*/
         app.get("/flowersAll", async (req, res) => {
             const result = await flowersCollection.find().toArray();
             res.send(result);
@@ -57,13 +57,30 @@ async function run() {
         app.patch("/flowersAll/:id", async (req, res) => {
             const flower = req.params.id;
             const filter = { _id: new ObjectId(flower) };
+            const options = { upsert: true };
+            const flowerDetails = req.body;
             const updateDoc = {
                 $set: {
-                    /* TODO */
+                    flowerName: flowerDetails.flowerName,
+                    flowerNav: flowerDetails.flowerNav,
+                    price: flowerDetails.price,
+                    flowerCategory: flowerDetails.flowerCategory,
+                    offerPrice: flowerDetails.offerPrice,
+                    percent: flowerDetails.percent,
+                    flowerImg: flowerDetails.flowerImg,
                 }
             }
-
+            const result = await flowersCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
         })
+        app.delete("/flowersAll/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await flowersCollection.deleteOne(query);
+            res.send(result)
+        })
+        /* Flowers post and get or update section  end*/
+
 
         // await client.db("admin").command({ ping: 1 });
         console.log("Slower Shop DataBase is successfully connected to MongoDB!");
