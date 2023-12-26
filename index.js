@@ -28,7 +28,9 @@ async function run() {
         // await client.connect();
         const usersCollection = client.db("flowersShop").collection("users");
         const flowersCollection = client.db("flowersShop").collection("allFlowers");
-        const contentTextCollection = client.db("flowersShop").collection("contentText");
+        const offerTextCollection = client.db("flowersShop").collection("offerText");
+        const sliderCollection = client.db("flowersShop").collection("sliderChange");
+        const bannerCollection = client.db("flowersShop").collection("bannerChange");
 
         /* user crate */
         app.get("/users", async (req, res) => {
@@ -81,17 +83,19 @@ async function run() {
             res.send(result)
         })
         /* Flowers post and get or update section  end*/
-        /* text content info start */
-        app.get("/contentText", async (req, res) => {
-            const result = await contentTextCollection.find().toArray();
+
+        //admin editor section
+        /* offer TExt api info start */
+        app.get("/offerText", async (req, res) => {
+            const result = await offerTextCollection.find().toArray();
             res.send(result)
         })
-        app.post("/contentText", async (req, res) => {
+        app.post("/offerText", async (req, res) => {
             const text = req.body;
-            const result = await contentTextCollection.insertOne(text);
+            const result = await offerTextCollection.insertOne(text);
             res.send(result);
         })
-        app.patch("/contentText/:id", async (req, res) => {
+        app.patch("/offerText/:id", async (req, res) => {
             const text = req.params.id;
             const filter = { _id: new ObjectId(text) };
             const options = { upsert: true };
@@ -99,13 +103,88 @@ async function run() {
             const updateDoc = {
                 $set: {
                     text: content.text,
-                    link: content.link
+                    link: content.link,
+                    image: content.image
                 }
             };
-            const result = await contentTextCollection.updateOne(filter, updateDoc, options);
+            const result = await offerTextCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        /* text content info end */
+        /* slider content info end */
+        /* slider api info start */
+        app.get("/sliderImage", async (req, res) => {
+            const result = await sliderCollection.find().toArray();
+            res.send(result)
+        })
+        app.post("/sliderImage", async (req, res) => {
+            const text = req.body;
+            const result = await sliderCollection.insertOne(text);
+            res.send(result);
+        })
+        app.patch("/sliderImage/:id", async (req, res) => {
+            const text = req.params.id;
+            const filter = { _id: new ObjectId(text) };
+            const options = { upsert: true };
+            const content = req.body;
+            const updateDoc = {
+                $set: {
+                    text: content.text,
+                    link: content.link,
+                    image: content.image
+                }
+            };
+            const result = await sliderCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+        /* slider content info end */
+        /* banner api info start */
+        app.get("/sliderImage", async (req, res) => {
+            const result = await sliderCollection.find().toArray();
+            res.send(result)
+        })
+        app.post("/sliderImage", async (req, res) => {
+            const text = req.body;
+            const result = await sliderCollection.insertOne(text);
+            res.send(result);
+        })
+        app.patch("/sliderImage/:id", async (req, res) => {
+            const text = req.params.id;
+            const filter = { _id: new ObjectId(text) };
+            const options = { upsert: true };
+            const content = req.body;
+            const updateDoc = {
+                $set: {
+                    text: content.text,
+                    link: content.link,
+                    image: content.image
+                }
+            };
+            const result = await sliderCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+        /* banner content info end */
+        /* Footer api start*/
+        app.get("/footerChange", async (req, res) => {
+            const result = await footerChangeCollection.find().toArray();
+            res.send(result)
+        })
+        app.post("/footerChange", async (req, res) => {
+            const footer = req.body;
+            const result = await footerChangeCollection.insertOne(footer);
+            res.send(result)
+        })
+        app.patch("/footerChange/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const footerBody = req.body;
+            const updateDoc = {
+                $set: {
+
+                }
+            }
+        })
+        /* Footer api end*/
 
         // await client.db("admin").command({ ping: 1 });
         console.log("Slower Shop DataBase is successfully connected to MongoDB!");
