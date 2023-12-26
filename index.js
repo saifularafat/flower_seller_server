@@ -31,6 +31,8 @@ async function run() {
         const offerTextCollection = client.db("flowersShop").collection("offerText");
         const sliderCollection = client.db("flowersShop").collection("sliderChange");
         const bannerCollection = client.db("flowersShop").collection("bannerChange");
+        const leftRightCollection = client.db("flowersShop").collection("leftRightChange");
+        const footerChangeCollection = client.db("flowersShop").collection("footerChange");
 
         /* user crate */
         app.get("/users", async (req, res) => {
@@ -104,13 +106,12 @@ async function run() {
                 $set: {
                     text: content.text,
                     link: content.link,
-                    image: content.image
                 }
             };
             const result = await offerTextCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        /* slider content info end */
+        /* text content info end */
         /* slider api info start */
         app.get("/sliderImage", async (req, res) => {
             const result = await sliderCollection.find().toArray();
@@ -128,8 +129,6 @@ async function run() {
             const content = req.body;
             const updateDoc = {
                 $set: {
-                    text: content.text,
-                    link: content.link,
                     image: content.image
                 }
             };
@@ -138,28 +137,50 @@ async function run() {
         })
         /* slider content info end */
         /* banner api info start */
-        app.get("/sliderImage", async (req, res) => {
-            const result = await sliderCollection.find().toArray();
+        app.get("/bannerImage", async (req, res) => {
+            const result = await bannerCollection.find().toArray();
             res.send(result)
         })
-        app.post("/sliderImage", async (req, res) => {
+        app.post("/bannerImage", async (req, res) => {
             const text = req.body;
-            const result = await sliderCollection.insertOne(text);
+            const result = await bannerCollection.insertOne(text);
             res.send(result);
         })
-        app.patch("/sliderImage/:id", async (req, res) => {
+        app.patch("/bannerImage/:id", async (req, res) => {
             const text = req.params.id;
             const filter = { _id: new ObjectId(text) };
             const options = { upsert: true };
             const content = req.body;
             const updateDoc = {
                 $set: {
-                    text: content.text,
-                    link: content.link,
                     image: content.image
                 }
             };
-            const result = await sliderCollection.updateOne(filter, updateDoc, options);
+            const result = await bannerCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+        /* banner content info end */
+        /* banner api info start */
+        app.get("/leftRightImage", async (req, res) => {
+            const result = await leftRightCollection.find().toArray();
+            res.send(result)
+        })
+        app.post("/leftRightImage", async (req, res) => {
+            const text = req.body;
+            const result = await leftRightCollection.insertOne(text);
+            res.send(result);
+        })
+        app.patch("/leftRightImage/:id", async (req, res) => {
+            const text = req.params.id;
+            const filter = { _id: new ObjectId(text) };
+            const options = { upsert: true };
+            const content = req.body;
+            const updateDoc = {
+                $set: {
+                    image: content.image
+                }
+            };
+            const result = await leftRightCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
         /* banner content info end */
