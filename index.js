@@ -99,7 +99,7 @@ async function run() {
         })
         app.get("/offerText/:id", async (req, res) => {
             const text = req.params.id;
-            const query = {_id: new ObjectId(text)}
+            const query = { _id: new ObjectId(text) }
             console.log(text);
             const result = await offerTextCollection.findOne(query);
             res.send(result)
@@ -141,6 +141,12 @@ async function run() {
                 }
             };
             const result = await sliderCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+        app.delete("/sliderImage/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await sliderCollection.deleteOne(query)
             res.send(result)
         })
         /* slider content info end */
