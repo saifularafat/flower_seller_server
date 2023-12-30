@@ -97,15 +97,23 @@ async function run() {
             const result = await offerTextCollection.insertOne(text);
             res.send(result);
         })
+        app.get("/offerText/:id", async (req, res) => {
+            const text = req.params.id;
+            const query = {_id: new ObjectId(text)}
+            console.log(text);
+            const result = await offerTextCollection.findOne(query);
+            res.send(result)
+        })
         app.patch("/offerText/:id", async (req, res) => {
             const text = req.params.id;
+            console.log(text);
             const filter = { _id: new ObjectId(text) };
             const options = { upsert: true };
             const content = req.body;
             const updateDoc = {
                 $set: {
-                    text: content.text,
-                    link: content.link,
+                    topBestOffer: content.topBestOffer,
+                    topBestOfferLink: content.topBestOfferLink,
                 }
             };
             const result = await offerTextCollection.updateOne(filter, updateDoc, options);
