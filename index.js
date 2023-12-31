@@ -98,15 +98,13 @@ async function run() {
             res.send(result);
         })
         app.get("/offerText/:id", async (req, res) => {
-            const text = req.params.id;
-            const query = { _id: new ObjectId(text) }
-            console.log(text);
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
             const result = await offerTextCollection.findOne(query);
             res.send(result)
         })
         app.patch("/offerText/:id", async (req, res) => {
             const text = req.params.id;
-            console.log(text);
             const filter = { _id: new ObjectId(text) };
             const options = { upsert: true };
             const content = req.body;
@@ -160,6 +158,13 @@ async function run() {
             const result = await bannerCollection.insertOne(text);
             res.send(result);
         })
+        app.get("/bannerImage/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            console.log(id);
+            const result = await bannerCollection.findOne(query);
+            res.send(result)
+        })
         app.patch("/bannerImage/:id", async (req, res) => {
             const text = req.params.id;
             const filter = { _id: new ObjectId(text) };
@@ -167,11 +172,17 @@ async function run() {
             const content = req.body;
             const updateDoc = {
                 $set: {
-                    image: content.image
+                    bannerLink: content.bannerLink,
                 }
             };
             const result = await bannerCollection.updateOne(filter, updateDoc, options);
             res.send(result)
+        })
+        app.delete("/bannerImage/:id", async(req, res ) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await bannerCollection.deleteOne(query);
+            res.send(result);
         })
         /* banner content info end */
         /* banner api info start */
@@ -191,10 +202,19 @@ async function run() {
             const content = req.body;
             const updateDoc = {
                 $set: {
-                    image: content.image
+                    leftRightLink: content.leftRightLink,
+                    LeftRightSerial: content.LeftRightSerial,
+                    leftRightContent: content.leftRightContent,
+                    category: content.category,
                 }
             };
             const result = await leftRightCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+        app.delete("/leftRightImage/:id", async(req, res ) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await leftRightCollection.deleteOne(query);
             res.send(result)
         })
         /* banner content info end */
