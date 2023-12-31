@@ -178,9 +178,9 @@ async function run() {
             const result = await bannerCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        app.delete("/bannerImage/:id", async(req, res ) => {
+        app.delete("/bannerImage/:id", async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await bannerCollection.deleteOne(query);
             res.send(result);
         })
@@ -193,6 +193,12 @@ async function run() {
         app.post("/leftRightImage", async (req, res) => {
             const text = req.body;
             const result = await leftRightCollection.insertOne(text);
+            res.send(result);
+        })
+        app.get("/leftRightImage/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await leftRightCollection.findOne(query);
             res.send(result);
         })
         app.patch("/leftRightImage/:id", async (req, res) => {
@@ -211,9 +217,9 @@ async function run() {
             const result = await leftRightCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        app.delete("/leftRightImage/:id", async(req, res ) => {
+        app.delete("/leftRightImage/:id", async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await leftRightCollection.deleteOne(query);
             res.send(result)
         })
