@@ -208,10 +208,8 @@ async function run() {
             const content = req.body;
             const updateDoc = {
                 $set: {
-                    leftRightLink: content.leftRightLink,
-                    LeftRightSerial: content.LeftRightSerial,
                     leftRightContent: content.leftRightContent,
-                    category: content.category,
+                    leftRightLink: content.leftRightLink
                 }
             };
             const result = await leftRightCollection.updateOne(filter, updateDoc, options);
@@ -234,6 +232,12 @@ async function run() {
             const result = await footerChangeCollection.insertOne(footer);
             res.send(result)
         })
+        app.get("/footerChange/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await footerChangeCollection.findOne(query);
+            res.send(result);
+        })
         app.patch("/footerChange/:id", async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -241,9 +245,28 @@ async function run() {
             const footerBody = req.body;
             const updateDoc = {
                 $set: {
-
+                    ftName1: footerBody.ftName1,
+                    ftUrl1: footerBody.ftUrl1,
+                    ftName2: footerBody.ftName2,
+                    ftUrl2: footerBody.ftUrl2,
+                    ftName3: footerBody.ftName3,
+                    ftUrl3: footerBody.ftUrl3,
+                    ftName4: footerBody.ftName4,
+                    ftUrl4: footerBody.ftUrl4,
+                    ftName5: footerBody.ftName5,
+                    ftUrl5: footerBody.ftUrl5,
+                    ftName6: footerBody.ftName6,
+                    ftUrl6: footerBody.ftUrl6,
+                    ftName7: footerBody.ftName7,
+                    ftUrl7: footerBody.ftUrl7,
+                    ftName8: footerBody.ftName8,
+                    ftUrl8: footerBody.ftUrl8,
+                    footerSocket: footerBody.footerSocket,
+                    developerURL: footerBody.developerURL
                 }
             }
+            const result = await footerChangeCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
         })
         /* Footer api end*/
 
