@@ -59,6 +59,12 @@ async function run() {
             const result = await flowersCollection.insertOne(flower);
             res.send(result)
         })
+        app.get("/flowersAll/:id" , async(req, res) => {
+            const id = req.params.id;
+            const query = { _id : new ObjectId(id)};
+            const result = await flowersCollection.findOne(query);
+            res.send(result)
+        })
         app.patch("/flowersAll/:id", async (req, res) => {
             const flower = req.params.id;
             const filter = { _id: new ObjectId(flower) };
