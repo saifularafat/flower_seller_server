@@ -134,19 +134,7 @@ async function run() {
             const result = await sliderCollection.insertOne(text);
             res.send(result);
         })
-        app.patch("/sliderImage/:id", async (req, res) => {
-            const text = req.params.id;
-            const filter = { _id: new ObjectId(text) };
-            const options = { upsert: true };
-            const content = req.body;
-            const updateDoc = {
-                $set: {
-                    image: content.image
-                }
-            };
-            const result = await sliderCollection.updateOne(filter, updateDoc, options);
-            res.send(result)
-        })
+       
         app.delete("/sliderImage/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
