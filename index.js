@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY)
 const PORT = process.env.PORT || 4000;
 
 /* middleware */
@@ -33,6 +34,7 @@ async function run() {
         const bannerCollection = client.db("flowersShop").collection("bannerChange");
         const leftRightCollection = client.db("flowersShop").collection("leftRightChange");
         const footerChangeCollection = client.db("flowersShop").collection("footerChange");
+        const paymentCollection = client.db("flowersShop").collection("payments");
 
         /* user crate */
         app.get("/users", async (req, res) => {
@@ -59,9 +61,9 @@ async function run() {
             const result = await flowersCollection.insertOne(flower);
             res.send(result)
         })
-        app.get("/flowersAll/:id" , async(req, res) => {
+        app.get("/flowersAll/:id", async (req, res) => {
             const id = req.params.id;
-            const query = { _id : new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await flowersCollection.findOne(query);
             res.send(result)
         })
@@ -134,7 +136,7 @@ async function run() {
             const result = await sliderCollection.insertOne(text);
             res.send(result);
         })
-       
+
         app.delete("/sliderImage/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -263,6 +265,51 @@ async function run() {
             res.send(result)
         })
         /* Footer api end*/
+
+        /* PAYMENT API */
+        app.post("/create-payment-intent", async (req, res) => {
+            const price = req.body;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ["card"],
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        })
+        /* payment client*/
+        app.post("/payment", async (req, res) => {
+            const pay = req.body;
+            const result = await paymentCollection.insertOne(pay);
+            res.send(result);
+        })
+        /* payment Admin approve */
+        app.patch("/payment/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatePay = {
+                $set: {
+                    status: "paid"
+                }
+            };
+            const result = await paymentCollection.updateOne(filter, updatePay);
+            res.send(result);
+        });
+        app.get("/payments", async (req, res) => {
+            const psy = await paymentCollection.find().toArray();
+            res.send(pay)
+        });
+        app.get("/payment/:email", async (req, res) => {
+            const email = req.params.email;
+            if (!email) {
+                res.send([]);
+            };
+            const query = { email: email };
+            const result = await paymentCollection.find(query).toArray();
+            res.send(result);
+        })
 
         // await client.db("admin").command({ ping: 1 });
         console.log("Slower Shop DataBase is successfully connected to MongoDB!");
