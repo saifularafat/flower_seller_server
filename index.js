@@ -71,16 +71,18 @@ async function run() {
             const flower = req.params.id;
             const filter = { _id: new ObjectId(flower) };
             const options = { upsert: true };
-            const flowerDetails = req.body;
+            const flowerInfo = req.body;
             const updateDoc = {
                 $set: {
-                    flowerName: flowerDetails.flowerName,
-                    flowerNav: flowerDetails.flowerNav,
-                    price: flowerDetails.price,
-                    flowerCategory: flowerDetails.flowerCategory,
-                    offerPrice: flowerDetails.offerPrice,
-                    percent: flowerDetails.percent,
-                    flowerImg: flowerDetails.flowerImg,
+                    flowerName: flowerInfo.flowerName,
+                    recipient: flowerInfo.recipient,
+                    price: flowerInfo.price,
+                    flowerCategory: flowerInfo.flowerCategory,
+                    offerPrice: flowerInfo.offerPrice,
+                    percent: flowerInfo.percent,
+                    flowerImg: flowerInfo.flowerImg,
+                    color: flowerInfo.color,
+                    flowerDetails: flowerInfo.flowerDetails
                 }
             }
             const result = await flowersCollection.updateOne(filter, updateDoc, options);
