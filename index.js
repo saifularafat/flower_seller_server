@@ -25,6 +25,26 @@ const client = new MongoClient(uri, {
     }
 });
 
+const verifyJWT = (req, res, next) => {
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+        return res
+            .status(401)
+            .send({ error: true, message: "unauthorized access" });
+    }
+    const token = authorization.split(" ")[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+        if (error) {
+            return res
+                .status(401)
+                .send({ error: true, message: "unauthorized access" });
+        }
+        req.decoded = decoded;
+        next();
+    })
+
+}
+
 async function run() {
     try {
         // await client.connect();
@@ -65,7 +85,11 @@ async function run() {
         });
         /* Flowers post and get or update section  start*/
         app.get("/flowersAll", async (req, res) => {
-            const result = await flowersCollection.find().toArray();
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await flowersCollection.find(query).toArray();
             res.send(result);
         })
         app.post("/flowersAll", async (req, res) => {
