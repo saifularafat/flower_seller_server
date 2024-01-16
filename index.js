@@ -60,13 +60,23 @@ async function run() {
         /* JWT TOKEN */
         app.post("/jwt", (req, res) => {
             const user = req.body;
-            console.log("jwt serial number 43", user);
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: "1d",
             })
-            res.send(token)
+            res.send({ token })
         })
-
+        /* verify Admin  */
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            if (user?.role !== "admin") {
+                return res
+                    .status(403)
+                    .send({ error: true, message: " forbidden messages" })
+            };
+            next();
+        }
 
         /* user crate */
         app.get("/users", async (req, res) => {
@@ -195,7 +205,6 @@ async function run() {
         app.get("/bannerImage/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            console.log(id);
             const result = await bannerCollection.findOne(query);
             res.send(result)
         })
