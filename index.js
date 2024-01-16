@@ -93,6 +93,17 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+        app.patch("/users/admin/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateUser = {
+                $set: {
+                    role: "admin",
+                }
+            };
+            const result = await usersCollection.updateOne(filter, updateUser);
+            res.send(result);
+        })
         /* Flowers post and get or update section  start*/
         app.get("/flowersAll", async (req, res) => {
             let query = {};
