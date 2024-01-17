@@ -104,6 +104,12 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updateUser);
             res.send(result);
         })
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result)
+        })
         /* Flowers post and get or update section  start*/
         app.get("/flowersAll", async (req, res) => {
             let query = {};
