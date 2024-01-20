@@ -89,7 +89,7 @@ async function run() {
             const result = await usersCollection.find(query).toArray();
             res.send(result);
         });
-        app.get("/users/admin/:email", async (req, res) => {
+        app.get("/users/admin/:email", verifyJWT, async (req, res) => {
             const email = req.params.email;
             if (req.decoded?.email !== email) {
                 return res.send({ admin: false })
@@ -109,7 +109,7 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
-        app.patch("/users/admin/:id", async (req, res) => {
+        app.patch("/users/admin/:id", verifyJWT, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateUser = {
@@ -120,7 +120,7 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updateUser);
             res.send(result);
         })
-        app.delete("/users/admin/:id", async (req, res) => {
+        app.delete("/users/admin/:id", verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
@@ -146,7 +146,7 @@ async function run() {
             const result = await flowersCollection.findOne(query);
             res.send(result)
         })
-        app.patch("/flowersAll/:id", async (req, res) => {
+        app.patch("/flowersAll/:id", verifyJWT, async (req, res) => {
             const flower = req.params.id;
             const filter = { _id: new ObjectId(flower) };
             const options = { upsert: true };
@@ -167,7 +167,7 @@ async function run() {
             const result = await flowersCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        app.delete("/flowersAll/:id", async (req, res) => {
+        app.delete("/flowersAll/:id", verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await flowersCollection.deleteOne(query);
@@ -406,5 +406,5 @@ app.get("/", (req, res) => {
     res.send("Flowers Server Site is Start")
 })
 app.listen(PORT, () => {
-    console.log(`Flower site is running of PORT a ${PORT}`);
+    console.log(`Flower site is running of PORT ${PORT}`);
 })
