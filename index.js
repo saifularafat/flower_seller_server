@@ -173,6 +173,22 @@ async function run() {
             const result = await flowersCollection.deleteOne(query);
             res.send(result)
         })
+        
+        /*  all flower is price low to High and High to Low*/
+        app.get("/ascendingPrice", async (req, res) => {
+            const result = await flowersCollection
+                .find()
+                .sort({ price: 1 })
+                .toArray();
+            res.send(result)
+        })
+        app.get("/descendingPrice", async (req, res) => {
+            const result = await flowersCollection
+                .find()
+                .sort({ price: -1 })
+                .toArray();
+            res.send(result)
+        })
         /* Flowers post and get or update section  end*/
 
         //admin editor section
