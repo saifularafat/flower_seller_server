@@ -196,7 +196,6 @@ async function run() {
                 $or: [
                     { flowerName: { $regex: searchText, $options: "i" } },
                     { color: { $regex: searchText, $options: "i" } },
-                    { flowerCategory: { $regex: searchText, $options: "i" } },
                 ]
             }).toArray();
             res.send(result)
