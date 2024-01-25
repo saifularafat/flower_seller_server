@@ -146,7 +146,7 @@ async function run() {
             const result = await flowersCollection.findOne(query);
             res.send(result)
         })
-        app.patch("/flowersAll/:id", verifyJWT, async (req, res) => {
+        app.patch("/flowersAll/:id", async (req, res) => {
             const flower = req.params.id;
             const filter = { _id: new ObjectId(flower) };
             const options = { upsert: true };
@@ -173,7 +173,7 @@ async function run() {
             const result = await flowersCollection.deleteOne(query);
             res.send(result)
         })
-        
+
         /*  all flower is price low to High and High to Low*/
         app.get("/ascendingPrice", async (req, res) => {
             const result = await flowersCollection
@@ -189,6 +189,19 @@ async function run() {
                 .toArray();
             res.send(result)
         })
+        /* search the flower  */
+        app.get("/searchFiledFlower/:text", async (req, res) => {
+            const searchText = req.params.text;
+            const result = await flowersCollection.find({
+                $or: [
+                    { flowerName: { $regex: searchText, $options: "i" } },
+                    { color: { $regex: searchText, $options: "i" } },
+                    { flowerCategory: { $regex: searchText, $options: "i" } },
+                ]
+            }).toArray();
+            res.send(result)
+        })
+
         /* Flowers post and get or update section  end*/
 
         //admin editor section
