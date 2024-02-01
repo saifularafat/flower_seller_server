@@ -427,35 +427,35 @@ async function run() {
         })
 
         /* SSLCommerz Payment api  */
+        const transition_id = new ObjectId().toString();
         app.post("/sslPayment", async (req, res) => {
-            console.log(req.body);
             const payment = await flowersCollection.findOne({
                 _id: new ObjectId(req.body)
             })
-            console.log(payment?.flowerCategory);
+            const orderInfo = req.body;
             const data = {
                 total_amount: payment?.price,
                 currency: 'USD',
-                tran_id: 'REF123', // use unique tran_id for each api call
-                success_url: 'http://localhost:3030/success',
-                fail_url: 'http://localhost:3030/fail',
-                cancel_url: 'http://localhost:3030/cancel',
+                tran_id: transition_id, // use unique tran_id for each api call
+                success_url: (`http://localhost:4000/payment/success/${transition_id}`),
+                fail_url: 'http://localhost:4000/fail',
+                cancel_url: 'http://localhost:4000/cancel',
                 ipn_url: 'http://localhost:3030/ipn',
                 shipping_method: 'Courier',
-                product_name: payment?.name,
+                product_name: orderInfo?.name,
                 product_category: payment?.flowerCategory,
                 product_profile: 'general',
-                cus_name: payment?.userName,
-                cus_email: payment?.email,
-                cus_add1: payment?.currentAddress,
+                cus_name: orderInfo?.userName,
+                cus_email: orderInfo?.email,
+                cus_add1: orderInfo?.currentAddress,
                 cus_add2: 'Dhaka',
                 cus_city: 'Dhaka',
                 cus_state: 'Dhaka',
                 cus_postcode: '1000',
                 cus_country: 'Bangladesh',
-                cus_phone: payment?.PhoneNumber,
+                cus_phone: orderInfo?.PhoneNumber,
                 cus_fax: '01711111111',
-                ship_name: payment?.userName,
+                ship_name: orderInfo?.userName,
                 ship_add1: 'Dhaka',
                 ship_add2: 'Dhaka',
                 ship_city: 'Dhaka',
@@ -467,9 +467,33 @@ async function run() {
             sslcz.init(data).then(apiResponse => {
                 // Redirect the user to payment gateway
                 let GatewayPageURL = apiResponse.GatewayPageURL
-                res.redirect(GatewayPageURL)
+                res.send({ url: GatewayPageURL })
+
+                const confirmOrder = {
+                    orderInfo,
+                    paidStatus: false,
+                    transition_id
+                };
+                const result = paymentCollection.insertOne(confirmOrder);
                 console.log('Redirecting to: ', GatewayPageURL)
             });
+
+            app.post("/payment/success/:transition", async (req, res) => {
+                console.log(req.params.transition);
+                const result =await paymentCollection.updateOne(
+                    { transition_id: req.params.transition },
+                    {
+                        $set: {
+                            paidStatus: true,
+                        }
+                    },
+                );
+                if (result.modifiedCount > 0) {
+                    res.redirect(`http://localhost:5173/payment/success/${req.params.transition}`)
+                };
+            });
+
+            console.log(data);
         })
 
         // await client.db("admin").command({ ping: 1 });
