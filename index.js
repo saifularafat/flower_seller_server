@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const SSLCommerzPayment = require("sslcommerz-lts");
+const axios = require("axios");
 const jwt = require("jsonwebtoken")
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
@@ -42,8 +44,13 @@ const verifyJWT = (req, res, next) => {
         req.decoded = decoded;
         next();
     })
-
 }
+
+/* SSLCommerz api key */
+const store_id = process.env.STORE_ID
+const store_passwd = process.env.STORE_PASS
+const is_live = false //true for live, false for sandbox
+
 
 async function run() {
     try {
@@ -374,7 +381,7 @@ async function run() {
         })
         /* Footer api end*/
 
-        /* PAYMENT API */
+        /* stripe PAYMENT API */
         app.post("/create-payment-intent", async (req, res) => {
             const price = req.body;
             const amount = price * 100;
@@ -417,6 +424,52 @@ async function run() {
             const query = { email: email };
             const result = await paymentCollection.find(query).toArray();
             res.send(result);
+        })
+
+        /* SSLCommerz Payment api  */
+        app.post("/sslPayment", async (req, res) => {
+            console.log(req.body);
+            const payment = await flowersCollection.findOne({
+                _id: new ObjectId(req.body)
+            })
+            console.log(payment?.flowerCategory);
+            const data = {
+                total_amount: payment?.price,
+                currency: 'USD',
+                tran_id: 'REF123', // use unique tran_id for each api call
+                success_url: 'http://localhost:3030/success',
+                fail_url: 'http://localhost:3030/fail',
+                cancel_url: 'http://localhost:3030/cancel',
+                ipn_url: 'http://localhost:3030/ipn',
+                shipping_method: 'Courier',
+                product_name: payment?.name,
+                product_category: payment?.flowerCategory,
+                product_profile: 'general',
+                cus_name: payment?.userName,
+                cus_email: payment?.email,
+                cus_add1: payment?.currentAddress,
+                cus_add2: 'Dhaka',
+                cus_city: 'Dhaka',
+                cus_state: 'Dhaka',
+                cus_postcode: '1000',
+                cus_country: 'Bangladesh',
+                cus_phone: payment?.PhoneNumber,
+                cus_fax: '01711111111',
+                ship_name: payment?.userName,
+                ship_add1: 'Dhaka',
+                ship_add2: 'Dhaka',
+                ship_city: 'Dhaka',
+                ship_state: 'Dhaka',
+                ship_postcode: 1000,
+                ship_country: 'Bangladesh',
+            };
+            const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
+            sslcz.init(data).then(apiResponse => {
+                // Redirect the user to payment gateway
+                let GatewayPageURL = apiResponse.GatewayPageURL
+                res.redirect(GatewayPageURL)
+                console.log('Redirecting to: ', GatewayPageURL)
+            });
         })
 
         // await client.db("admin").command({ ping: 1 });
