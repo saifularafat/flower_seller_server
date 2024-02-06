@@ -413,7 +413,7 @@ async function run() {
             res.send(result);
         });
         app.get("/payments", async (req, res) => {
-            const psy = await paymentCollection.find().toArray();
+            const pay = await paymentCollection.find().toArray();
             res.send(pay)
         });
         app.get("/payment/:email", async (req, res) => {
@@ -433,12 +433,13 @@ async function run() {
                 _id: new ObjectId(req.body)
             })
             const orderInfo = req.body;
+            console.log(orderInfo);
             const data = {
-                total_amount: payment?.price,
+                total_amount: orderInfo?.price,
                 currency: 'USD',
                 tran_id: transition_id, // use unique tran_id for each api call
                 success_url: (`http://localhost:4000/payment/success/${transition_id}`),
-                fail_url: 'http://localhost:4000/fail',
+                fail_url: `http://localhost:4000/payment/fail/${transition_id}`,
                 cancel_url: 'http://localhost:4000/cancel',
                 ipn_url: 'http://localhost:3030/ipn',
                 shipping_method: 'Courier',
@@ -471,6 +472,7 @@ async function run() {
 
                 const confirmOrder = {
                     orderInfo,
+                    payStatus: "success",
                     paidStatus: false,
                     transition_id
                 };
@@ -480,7 +482,7 @@ async function run() {
 
             app.post("/payment/success/:transition", async (req, res) => {
                 console.log(req.params.transition);
-                const result =await paymentCollection.updateOne(
+                const result = await paymentCollection.updateOne(
                     { transition_id: req.params.transition },
                     {
                         $set: {
@@ -492,6 +494,15 @@ async function run() {
                     res.redirect(`http://localhost:5173/payment/success/${req.params.transition}`)
                 };
             });
+
+            app.post("/payment/fail/:transition", async (req, res) => {
+                const result = await paymentCollection.deleteOne(
+                    { transition_id: req.params.transition }
+                )
+                if (result.deletedCount) {
+                    res.redirect(`http://localhost:5173/payment/fail/${req.params.transition}`)
+                }
+            })
 
             console.log(data);
         })
