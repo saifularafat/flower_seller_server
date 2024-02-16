@@ -416,12 +416,20 @@ async function run() {
             const pay = await paymentCollection.find().toArray();
             res.send(pay)
         });
-        app.get("/payment/:email", async (req, res) => {
-            const email = req.params.email;
-            if (!email) {
-                res.send([]);
-            };
-            const query = { email: email };
+        // app.get("/payment/:email", async (req, res) => {
+        //     const email = req.params.email;
+        //     if (!email) {
+        //         res.send([]);
+        //     };
+        //     const query = { email: email };
+        //     const result = await paymentCollection.find(query).toArray();
+        //     res.send(result);
+        // })
+        app.get('/payment/user', async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
             const result = await paymentCollection.find(query).toArray();
             res.send(result);
         })
@@ -471,7 +479,18 @@ async function run() {
                 res.send({ url: GatewayPageURL })
 
                 const confirmOrder = {
-                    orderInfo,
+                    image: payment?.flowerImg,
+                    name: payment?.flowerName,
+                    price: payment?.price,
+                    totalPrice: orderInfo?.totalPrice,
+                    charge: orderInfo?.charge,
+                    currentAddress: orderInfo?.currentAddress,
+                    PhoneNumber: orderInfo?.PhoneNumber,
+                    email: orderInfo?.email,
+                    userName: orderInfo?.userName,
+                    date: new Date(),
+                    paymentType: "SSL CommerZ",
+                    duration: "Delivery Duration Time is 7 Day!",
                     payStatus: "success",
                     paidStatus: false,
                     transition_id
