@@ -96,16 +96,6 @@ async function run() {
             const result = await usersCollection.find(query).toArray();
             res.send(result);
         });
-        app.get("/users/admin/:email", verifyJWT, async (req, res) => {
-            const email = req.params.email;
-            if (req.decoded?.email !== email) {
-                return res.send({ admin: false })
-            }
-            const query = { email: email };
-            const user = await usersCollection.findOne(query);
-            const result = { admin: user?.role === "admin" };
-            res.send(result)
-        });
         app.post("/users", async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
@@ -115,6 +105,24 @@ async function run() {
             }
             const result = await usersCollection.insertOne(user);
             res.send(result);
+        });
+        app.get("/user", async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+
+            const result = await usersCollection.findOne(query);
+            res.send(result);
+        });
+
+        app.get("/users/admin/:email", verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            if (req.decoded?.email !== email) {
+                return res.send({ admin: false })
+            }
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            const result = { admin: user?.role === "admin" };
+            res.send(result)
         });
         app.patch("/users/admin/:id", verifyJWT, async (req, res) => {
             const id = req.params.id;
