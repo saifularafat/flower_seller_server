@@ -113,6 +113,23 @@ async function run() {
             const result = await usersCollection.findOne(query);
             res.send(result);
         });
+        app.patch("/updateProfile", async (req, res) => {
+            const email = req.query.email;
+            const data = req.body;
+            const query = { email: email };
+            const options = { upsert: true };
+            const doc = {
+                $set: {
+                    name: data.name,
+                    gender: data.gender,
+                    address: data.address,
+                    phoneNumber: data.phoneNumber,
+                    image: data.image,
+                },
+            };
+            const result = await usersCollection.updateOne(query, doc, options);
+            res.send(result);
+        });
 
         app.get("/users/admin/:email", verifyJWT, async (req, res) => {
             const email = req.params.email;
