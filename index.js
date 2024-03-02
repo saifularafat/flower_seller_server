@@ -441,15 +441,6 @@ async function run() {
             const pay = await paymentCollection.find().toArray();
             res.send(pay)
         });
-        // app.get("/payment/:email", async (req, res) => {
-        //     const email = req.params.email;
-        //     if (!email) {
-        //         res.send([]);
-        //     };
-        //     const query = { email: email };
-        //     const result = await paymentCollection.find(query).toArray();
-        //     res.send(result);
-        // })
         app.get('/payment/user', async (req, res) => {
             let query = {};
             if (req.query?.email) {
