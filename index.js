@@ -57,6 +57,7 @@ async function run() {
         // await client.connect();
         const usersCollection = client.db("flowersShop").collection("users");
         const flowersCollection = client.db("flowersShop").collection("allFlowers");
+        const bookMarkFlowerCollection = client.db("flowersShop").collection("bookMarkFlower");
         const offerTextCollection = client.db("flowersShop").collection("offerText");
         const sliderCollection = client.db("flowersShop").collection("sliderChange");
         const bannerCollection = client.db("flowersShop").collection("bannerChange");
@@ -232,8 +233,29 @@ async function run() {
             }).toArray();
             res.send(result)
         })
-
         /* Flowers post and get or update section  end*/
+
+        /* book mark flower start */
+        app.get("/bookmarkFlower", async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await bookMarkFlowerCollection.find(query).toArray();
+            res.send(result)
+        })
+        app.post("/bookmarkFlower", async (req, res) => {
+            const item = req.body;
+            const result = await bookMarkFlowerCollection.insertOne(item)
+            res.send(result)
+        })
+        app.delete("/bookmarkFlower/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bookMarkFlowerCollection.deleteOne(query);
+            res.send(result)
+        })
+        /* book mark flower end */
 
         //admin editor section
         /* offer TExt api info start */
