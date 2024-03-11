@@ -454,7 +454,9 @@ async function run() {
             const filter = { _id: new ObjectId(id) };
             const updatePay = {
                 $set: {
-                    status: "paid"
+                    status: "paid",
+                    status: "cancel",
+                    status: "retune"
                 }
             };
             const result = await paymentCollection.updateOne(filter, updatePay);
