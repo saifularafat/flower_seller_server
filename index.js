@@ -449,17 +449,46 @@ async function run() {
             res.send(result);
         })
         /* payment Admin approve */
-        app.patch("/payment/:id", async (req, res) => {
+        app.patch("/payment/admin/:id", async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updatePay = {
                 $set: {
-                    status: "paid",
-                    status: "cancel",
-                    status: "retune"
+                    payStatus: "success",
                 }
             };
             const result = await paymentCollection.updateOne(filter, updatePay);
+            res.send(result);
+        });
+        /* users option */
+        app.patch("/payment/user/cancel/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedFlower = req.body;
+            const updatePay = {
+                $set: {
+                    payStatus: "cancel",
+                    cancelType: updatedFlower.cancelType,
+                    cancelMessage: updatedFlower.cancelMessage
+                }
+            };
+            const result = await paymentCollection.updateOne(filter, updatePay, options);
+            res.send(result);
+        });
+        app.patch("/payment/user/retune/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedFlower = req.body;
+            const updatePay = {
+                $set: {
+                    payStatus: "cancel",
+                    cancelType: updatedFlower.cancelType,
+                    cancelMessage: updatedFlower.cancelMessage
+                }
+            };
+            const result = await paymentCollection.updateOne(filter, updatePay, options);
             res.send(result);
         });
         app.get("/payments", async (req, res) => {
