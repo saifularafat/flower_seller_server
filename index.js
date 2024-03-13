@@ -483,7 +483,7 @@ async function run() {
             const updatedFlower = req.body;
             const updatePay = {
                 $set: {
-                    payStatus: "cancel",
+                    payStatus: "retune",
                     cancelType: updatedFlower.cancelType,
                     cancelMessage: updatedFlower.cancelMessage
                 }
