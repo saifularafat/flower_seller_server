@@ -460,6 +460,18 @@ async function run() {
             const result = await paymentCollection.updateOne(filter, updatePay);
             res.send(result);
         });
+        app.patch("/payment/admin/cancel/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatePay = {
+                $set: {
+                    payStatus: "cancel",
+                    cancelType: "No receive",
+                }
+            };
+            const result = await paymentCollection.updateOne(filter, updatePay);
+            res.send(result);
+        });
         /* users option */
         app.patch("/payment/user/cancel/:id", async (req, res) => {
             const id = req.params.id;
