@@ -65,6 +65,7 @@ async function run() {
         const leftRightCollection = client.db("flowersShop").collection("leftRightChange");
         const footerChangeCollection = client.db("flowersShop").collection("footerChange");
         const paymentCollection = client.db("flowersShop").collection("payments");
+        const emailCollection = client.db("flowersShop").collection("emails");
 
         /* JWT TOKEN */
         app.post("/jwt", (req, res) => {
@@ -607,6 +608,32 @@ async function run() {
 
             console.log(data);
         })
+
+        /* Email API Start */
+        app.get("/allEmail", async (req, res) => {
+            const email = await emailCollection.find().toArray();
+            res.send(email)
+        })
+        app.get("/allEmail/user", async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = { email: req.query.email }
+            }
+            const result = await emailCollection.find(query).toArray();
+            res.send(result)
+        });
+        app.post("/emailPost", async (req, res) => {
+            const email = req.body;
+            const result = await emailCollection.insertOne(email);
+            res.send(result)
+        })
+        app.delete("/emailDelete/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await emailCollection.deleteOne(query);
+            res.send(result)
+        })
+        /* Email API End */
 
         // await client.db("admin").command({ ping: 1 });
         console.log("Slower Shop DataBase is successfully connected to MongoDB!");
