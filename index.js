@@ -614,19 +614,33 @@ async function run() {
             const email = await emailCollection.find().toArray();
             res.send(email)
         })
-        app.get("/allEmail/user", async (req, res) => {
-            let query = {};
-            if (req.query.email) {
-                query = { email: req.query.email }
-            }
-            const result = await emailCollection.find(query).toArray();
-            res.send(result)
-        });
         app.post("/emailPost", async (req, res) => {
             const email = req.body;
             const result = await emailCollection.insertOne(email);
             res.send(result)
         })
+        app.patch("/emailDelete/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatePay = {
+                $set: {
+                    emailStatus: "delete",
+                }
+            };
+            const result = await emailCollection.updateOne(filter, updatePay);
+            res.send(result);
+        });
+        app.patch("/emailStarred/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatePay = {
+                $set: {
+                    starred: "start",
+                }
+            };
+            const result = await emailCollection.updateOne(filter, updatePay);
+            res.send(result);
+        });
         app.delete("/emailDelete/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
