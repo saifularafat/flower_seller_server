@@ -614,6 +614,12 @@ async function run() {
             const email = await emailCollection.find().toArray();
             res.send(email)
         })
+        app.get("/emailQuery/:id", async (req, res) => {
+            const id = req.params.id;
+            const query =  { _id: new ObjectId(id) }
+            const result = await emailCollection.find(query).toArray();
+            res.send(result)
+        })
         app.post("/emailPost", async (req, res) => {
             const email = req.body;
             const result = await emailCollection.insertOne(email);
